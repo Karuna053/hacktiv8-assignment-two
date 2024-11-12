@@ -66,3 +66,43 @@ func GetAllData(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": orders})
 }
+
+func UpdateDataOrderAndItem(c *gin.Context) {
+	var db = database.GetDB()
+	var order models.Order
+
+	// Bind JSON request to the Order struct
+	if err := c.ShouldBindJSON(&order); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	err := db.First(&order, "customer_name = ?", order.CustomerName).Error
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		return
+	}
+
+	for _, item := range order.Items {
+		// Find the existing item by item_code and order_id
+		var existingItem models.Item
+		if err := db.Where("item_code = ? AND order_id = ?", item.ItemCode, order.ID).First(&existingItem).Error; err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Item not found for update!"})
+			return
+		}
+
+		// Update fields
+		existingItem.Description = item.Description
+		existingItem.Quantity = item.Quantity
+
+		// Save the updated item
+		if err := db.Save(&existingItem).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update item"})
+			return
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Order and items updated successfully"})
+}
