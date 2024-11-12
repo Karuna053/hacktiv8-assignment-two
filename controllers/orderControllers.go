@@ -56,10 +56,10 @@ func GetAllData(c *gin.Context) {
 	var db = database.GetDB()
 	var orders []models.Order
 
-	err := db.Find(&orders).Error
+	err := db.Preload("Items").Find(&orders).Error
 	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err,
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
 		})
 		return
 	}

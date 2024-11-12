@@ -7,6 +7,6 @@ type Item struct {
 	ItemCode    string `json:"itemCode"`
 	Description string `json:"description"`
 	Quantity    int    `json:"quantity"`
-	OrderID     uint   `json:"orderID"`            // Foreign key to reference Order
-	Order       Order  `gorm:"foreignKey:OrderID"` // GORM relation to Order
+	OrderID     uint   `json:"orderID"`                     // Foreign key to reference Order
+	Order       Order  `gorm:"foreignKey:OrderID" json:"-"` // Prevent recursive JSON nesting
 }
