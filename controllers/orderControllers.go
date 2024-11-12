@@ -34,7 +34,7 @@ func CreateOrder(c *gin.Context) {
 	// Slap OrderID to each items in the request
 	for i := range order.Items {
 		order.Items[i].OrderID = order.ID
-		order.Items[i].Model.ID = 0 // Ensure ID is unset so it auto-generates
+		order.Items[i].Model.ID = 0 // ChatGPT solution since I'm unsure of neater way to do this... Ensure ID is unset so it auto-generates
 	}
 
 	// Create items with the associated OrderID
@@ -50,4 +50,19 @@ func CreateOrder(c *gin.Context) {
 		"message": "Order created successfully",
 		"order":   order,
 	})
+}
+
+func GetAllData(c *gin.Context) {
+	var db = database.GetDB()
+	var orders []models.Order
+
+	err := db.Find(&orders).Error
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": err,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": orders})
 }
