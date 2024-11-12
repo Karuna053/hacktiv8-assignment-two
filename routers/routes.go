@@ -18,7 +18,7 @@ func StartRouter() *gin.Engine {
 		apiRouter.POST("/create", controllers.CreateOrder)
 		apiRouter.GET("/get-all-data", controllers.GetAllData)
 		apiRouter.PUT("/update", controllers.UpdateDataOrderAndItem)
-		// apiRouter.DELETE("/delete", controllers.DeleteDataOrderAndItem)
+		apiRouter.DELETE("/delete", controllers.DeleteDataOrderAndItem)
 	}
 
 	return router
